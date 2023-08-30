@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Login</title>
+    <style>
+        body {
+            font-family: "Georgia", serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #fffdfd;
+        }
+        .container {
+            display: flex;
+            max-width: 100%;
+            background-color: #EFEFEF;
+            border-radius: 10px;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+            margin: 20px;
+            width: 50%;
+            height: 50%;
+            overflow: hidden;
+        }
+        .left-container {
+            padding: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #C1EEFF;
+            flex: 1;
+        }
+        .right-container {
+            /*padding: 20px;*/
+            padding-left: 70px;
+            padding-right: 70px;
+            padding-top: 50px;
+            padding-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+        }
+        .image {
+            max-width: 100%;
+            height: auto;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #FF3B3F;
+             /* #A9A9A9, #CAEBF2, #FF3B3F, #EFEFEF  */
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #FF3B3F;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ab1b1d;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="left-container">
+            <img class="image" src="todo.png" alt="Image">
+        </div>
+        <div class="right-container">
+            <h2>To-do list</h2>
+            <form action="/login" method="POST">
+                <label for="username">Username</label>
+                <input type="text" name="username">
+                <label for="password">Password</label>
+                <input type="password" name="password">
+                <button type="submit">Login</button>
+            </form>
+            {% if error_message %}
+                <p class="error">{{ error_message }}</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+<!--
+
+<body>
+    {% if username %}
+        <p>Welcome, {{ username }}!</p>
+        <a href="/logout">Logout</a>
+    {% else %}
+        <form action="/login" method="POST">
+            <input type="text" name="username" placeholder="Username or Email">
+            <input type="password" name="password" placeholder="Password">
+            <button type="submit">Login</button>
+        </form>
+        {% if error_message %}
+            <p>{{ error_message }}</p>
+        {% endif %}
+    {% endif %}
+</body>
+
+  <div class="container">
+    <h2>Login</h2>
+    <form id="login-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        
+        <button type="submit" id="login-button">Login</button>  <!--submit == button-->
+ <!--   </form>
+    <div id="message"></div>
+
+    <script>
+        document.getElementById("login-button").addEventListener("click", async () => {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const response = await fetch("http://127.0.0.1:5001/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+
+            const messageElement = document.getElementById("message");
+            if (result.result === "success") { // Adjust based on your backend response structure
+                messageElement.textContent = "Logged in successfully";
+                // Redirect to the list page or show the list using frontend logic
+                window.location.href = "/"; // Or the URL of your list page
+            } else {
+                messageElement.textContent = "Invalid credentials";
+            }
+        });
+    </script>
+    </div>
+</body>
+-->
+
+
+  
+</html>

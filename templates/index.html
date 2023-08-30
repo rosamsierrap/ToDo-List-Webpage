@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Todo List Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        body {
+            font-family: "Georgia", serif;
+            background-color: #fffdfd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .box-container {
+            background-color: #EFEFEF;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #FF3B3F;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .done {
+            text-decoration: line-through;
+        }
+
+        .add-button {
+            background-color: #FF3B3F;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-button:hover {
+            background-color: #ab1b1d;
+        }
+
+        .form-container {
+            background-color: #EFEFEF;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-width: 800px;
+        }
+
+        label {
+            font-size: 16px;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="text"],
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+
+        .logout-button {
+            background-color: #979595;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+
+            /* Position the logout button to the right */
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .logout-button:hover {
+            background-color: #525050;
+            color: white;
+        }
+        /* Custom style for Mark as Done button */
+        .custom-mark-done {
+            background-color: #FF3B3F; /* Green color */
+            color: white; /* Text color */
+            border-color: #FF3B3F; /* Border color */
+        }
+
+
+        /* Custom style for Delete button */
+        .custom-delete {
+            background-color: #979595; /* Red color */
+            color: white; /* Text color */
+            border-color: #979595; /* Border color */
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .input-container label {
+            width: 140px;
+            margin-right: 10px;
+        }
+
+        .ex1{
+            font-size: 15px;
+        }
+
+        #map {
+        width: 100%;
+        height: 400px;
+        /* Add any additional styling properties here */
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="box-container">
+        <div class="logout-container">
+            <a class="logout-button" href="{{ url_for('logout') }}">Logout</a>
+        </div>
+        <h3>My To-Do List</h3>
+        <table class="table">
+            {% for entry in todolist %}
+            <tr>
+                <td {% if entry.status=='done' %} class='done' {% endif %}>{{ entry.what_to_do|safe }}</td>
+                <td>{{ entry.due_date|safe }}</td>
+                <td>{{ entry.location|safe }}</td>
+                <td>
+                    <button class="btn custom-mark-done" onclick="location.href='/mark/{{entry.what_to_do|urlencode}}'">Mark as Done</button>
+                    <button class="btn custom-delete" onclick="location.href='/delete/{{entry.what_to_do|urlencode}}'">Delete</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3">
+                    <em>Unbelievable. Nothing to do for now.</em>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button class="add-button" onclick="toggle_entry_form();">Add a New Item</button>
+
+        <div id="add-form" style="display:none">
+            <form action="/add" method="POST">
+                <div class="form-row">
+                    <div class="input-container">
+                        <label class= 'ex1' for="what_to_do">What to do:</label>
+                        <input type="text" size="50" name="what_to_do" value="more homework?">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-container">
+                        <label class= 'ex1' for="due_date">When:</label>
+                        <input type="datetime-local" id="due_date" name="due_date" value="">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="input-container">
+                        <label class= 'ex1' for="location">Location:</label>
+                        <input type="text" size="50" name="location" id="location" value="Home">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <input class="btn btn-success" type="submit" value="Save the New Item">
+                </div>
+            </form>
+        </div>
+
+        <div id="map"></div>
+
+        
+        
+    </div>
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdoiSj5ENlnSGyWtKEuRLrdw0v2L3qqFQ&libraries=places"></script>
+
+<script>
+    var show_entry_form = false;
+    var markers = [];
+
+
+    function toggle_entry_form() {
+        if (show_entry_form) {
+            $('#add-form').hide();
+        } else {
+            $('#add-form').show();
+        }
+        show_entry_form = !show_entry_form;
+    }
+
+    function initAutocomplete() {
+        var input = document.getElementById('location');
+        var autocomplete = new google.maps.places.Autocomplete(input);
+    }
+
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 40.71427, lng: -74.00597 }, // Set default center
+            zoom: 12
+        });
+
+        // Create the fixed marker
+        var fixedMarkerPosition = { lat: 40.71427, lng: -74.00597 }; // Set the position for the fixed marker
+
+        fixedMarker = new google.maps.Marker({
+            map: map,
+            position: fixedMarkerPosition,
+            title: "Fixed Marker"
+        });
+
+        markers.push(fixedMarker); // Add the fixed marker to the markers array
+
+        // Optionally, you can add an info window to the fixed marker
+        var fixedInfowindow = new google.maps.InfoWindow({
+            content: "Fixed Marker Info"
+        });
+
+        // Open the info window when fixed marker is clicked
+        fixedMarker.addListener('click', function () {
+            fixedInfowindow.open(map, fixedMarker);
+        });
+
+        var input = document.getElementById('location');
+        var autocomplete = new google.maps.places.Autocomplete(input);
+
+        // Add event listener when a place is selected
+        autocomplete.addListener('place_changed', function () {
+            var place = autocomplete.getPlace();
+
+            if (!place.geometry) {
+                // User entered the name of a place that was not suggested
+                return;
+            }
+
+            // Set map center to the selected place
+            map.setCenter(place.geometry.location);
+
+            // Create a task marker at the selected place
+            createTaskMarker(map, place.geometry.location, place.name);
+        });
+}
+
+
+        function createTaskMarker(map, position, title) {
+            var marker = new google.maps.Marker({
+                map: map,
+                position: position,
+                title: title
+            });
+
+            markers.push(marker); // Add the new marker to the markers array
+
+            // Optionally, you can add an info window to the marker
+            var infowindow = new google.maps.InfoWindow({
+                content: title
+            });
+
+            // Open the info window when marker is clicked
+            marker.addListener('click', function () {
+                infowindow.open(map, marker);
+            });
+        }
+
+    // Call the initAutocomplete function
+    initAutocomplete();
+
+    // Call the initMap function
+    initMap();
+</script>
+ 
+
+</body>
+
+</html>
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Todo List Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .done {
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h3>oh, so many things to do...</h3>
+        <table class='table'>
+            {% for entry in todolist %}
+            <tr>
+                <td {% if entry.status=='done' %} class='done' {% endif %}>{{ entry.what_to_do|safe }}</td>
+                <td>{{ entry.due_date|safe }}</td>
+                <td>
+                    <button onclick="location.href='/mark/{{entry.what_to_do|urlencode}}'">mark as done </button>
+                    <button onclick="location.href='/delete/{{entry.what_to_do|urlencode}}'">delete</button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td>
+                    <em>Unbelievable. Nothing to do for now.</em>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <button onclick="toggle_entry_form();" id='toggle_button'>add a new item</button>
+    </div>
+
+    <div class="container">
+        <form action="/add" method="POST" id="add-form" style="display:none">
+            <div class="row">
+                <div class="col-sm-6">
+                    what to do:
+                    <input type="text" size="50" name="what_to_do" value="more homework?" />
+                </div>
+                <div class="col-sm-3">
+                    when:
+                    <input type="datetime-local" id="Test_DatetimeLocal" name="due_date" value="" />>
+                    <!--<input type="text" name="due_date" value="" />-->
+           <!--     </div>
+                <div class="col-sm-3">
+                    <input type="submit" value="save the new item" />
+                </div>
+            </div>
+        </form>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <script>
+        var show_entry_form = false;
+
+        function toggle_entry_form() {
+            if (show_entry_form) {
+                $('#add-form').hide();
+                $('#toggle_button').text("add a new item");
+            } else {
+                $('#add-form').show();
+                $('#toggle_button').text("cancel the new entry");
+            }
+            show_entry_form = !show_entry_form;
+        };
+    </script>
+    
+</body>
+
+</html>
+-->
